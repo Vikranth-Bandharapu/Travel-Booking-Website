@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 — Page Not Found | Stackly</title>
+    <meta name="description" content="The requested Stackly page could not be found." />
+
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <!-- Shared Project Stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .error-page-header {
+        background: rgba(250, 248, 245, 0.96);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-ink);
+      }
+
+      .error-page-header .brand-logo__img {
+        filter: brightness(0) saturate(100%);
+      }
+
+      .error-page-main {
+        min-height: calc(100vh - var(--header-height) - 220px);
+        padding-top: calc(var(--header-height) + 3.5rem);
+        padding-bottom: 4.5rem;
+        display: grid;
+        place-items: center;
+      }
+
+      .error-card {
+        width: min(640px, 100%);
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-xl);
+        padding: clamp(2rem, 5vw, 3.5rem);
+        text-align: center;
+        box-shadow: var(--shadow-md);
+      }
+
+      .error-card__icon {
+        width: 68px;
+        height: 68px;
+        margin-inline: auto;
+        border-radius: 50%;
+        background: var(--color-primary-light);
+        color: var(--color-primary);
+        display: grid;
+        place-items: center;
+        font-size: 1.65rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .error-card__code {
+        font-family: var(--font-display);
+        font-size: clamp(3.5rem, 8vw, 5.25rem);
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--color-primary);
+      }
+
+      .error-card__title {
+        font-family: var(--font-display);
+        font-size: var(--text-3xl);
+        margin-top: 0.65rem;
+        color: var(--color-ink);
+      }
+
+      .error-card__text {
+        margin-top: 0.75rem;
+        margin-inline: auto;
+        max-width: 44ch;
+        color: var(--color-ink-secondary);
+        font-size: var(--text-base);
+      }
+
+      .error-card__actions {
+        margin-top: 1.85rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header error-page-header">
+      <div class="container header-inner">
+        <a href="index.html" class="brand-logo" aria-label="Stackly Home">
+          <img src="assets/logo.webp" alt="Stackly" class="brand-logo__img" />
+        </a>
+
+        <a href="index.html" class="btn btn--primary btn--sm">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Home
+        </a>
+      </div>
+    </header>
+
+    <main class="error-page-main">
+      <div class="container" style="display: grid; place-items: center;">
+        <section class="error-card" aria-labelledby="error-heading">
+          <div class="error-card__icon" aria-hidden="true">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <div class="error-card__code tabular-nums">404</div>
+          <h1 class="error-card__title" id="error-heading">Page Not Found</h1>
+          <p class="error-card__text">
+            We couldn’t find the page you were looking for. Head back to the Stackly homepage to explore curated destinations and boutique stays.
+          </p>
+          <div class="error-card__actions">
+            <a href="index.html" class="btn btn--primary btn--lg">
+              <i class="fa-solid fa-house" aria-hidden="true"></i> Return to Homepage
+            </a>
+            <a href="index.html#destinations" class="btn btn--outline btn--lg">
+              Explore Destinations <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bottom" style="padding-top: 0;">
+          <span>&copy; 2026 Stackly. All rights reserved. &middot; Stackly, Tamil Nadu &middot; +91 98765 43210</span>
+          <a href="index.html" class="back-to-top">Home <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
