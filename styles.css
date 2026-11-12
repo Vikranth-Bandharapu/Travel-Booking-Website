@@ -183,6 +183,7 @@ ol {
 /* Section Layout Helpers */
 .section {
   padding-block: var(--section-pad);
+  overflow-x: clip;
 }
 
 .section--tinted {
@@ -3461,4 +3462,90 @@ ol {
   z-index: 160;
   pointer-events: none;
   transition: width 80ms linear;
+}
+
+
+/* ==========================================================================
+   Rich Micro-Interactions & Motion Choreography
+   ========================================================================== */
+
+@keyframes kickerFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.hero__kicker {
+  animation: kickerFloat 4.5s ease-in-out infinite;
+}
+
+/* Button Hover Shine Sweep */
+.btn--primary,
+.btn--accent {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary::after,
+.btn--accent::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.24) 50%, transparent 80%);
+  transform: skewX(-18deg);
+  transition: left 550ms var(--ease-out);
+  pointer-events: none;
+}
+
+.btn--primary:hover::after,
+.btn--accent:hover::after {
+  left: 145%;
+}
+
+/* Benefit Icon Pop & Invert */
+.benefit-card__icon {
+  transition: transform var(--transition-base), background-color var(--transition-base), color var(--transition-base);
+}
+
+.benefit-card:hover .benefit-card__icon {
+  transform: scale(1.1) rotate(-5deg);
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+/* Bento & Card CTA Arrow Glide */
+.bento-item__cta i,
+.season-pick-card__cta i,
+.destination-card__footer .btn i {
+  transition: transform var(--transition-fast);
+}
+
+.bento-item:hover .bento-item__cta i,
+.season-pick-card:hover .season-pick-card__cta i,
+.destination-card:hover .destination-card__footer .btn i {
+  transform: translateX(4px);
+}
+
+/* Smooth Panel Reveal for FAQ, Itineraries Day Plan & Season Switcher */
+@keyframes panelReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-panel:not([hidden]),
+.itinerary-days:not([hidden]),
+.season-picks-grid {
+  animation: panelReveal 340ms var(--ease-out);
 }

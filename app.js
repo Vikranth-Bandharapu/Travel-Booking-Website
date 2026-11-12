@@ -867,7 +867,7 @@
     const cardsHtml = filtered
       .map(
         (dest, idx) => `
-      <article class="destination-card ${filtered.length === 1 ? 'destination-card--spotlight' : ''}" data-aos="fade-up" data-aos-delay="${(idx % 4) * 60}">
+      <article class="destination-card ${filtered.length === 1 ? 'destination-card--spotlight' : ''}" data-aos="${idx % 2 === 0 ? 'fade-up' : 'zoom-in-up'}" data-aos-delay="${(idx % 4) * 90}">
         <div class="destination-card__media">
           <img
             src="${escapeHTML(dest.image)}"
@@ -1019,6 +1019,10 @@
           </div>
         </div>
       </div>`;
+
+    if (typeof Meridian.refreshAnimations === 'function') {
+      Meridian.refreshAnimations();
+    }
   }
 
   function init() {
@@ -1085,7 +1089,7 @@
     grid.innerHTML = Meridian.data.itineraries
       .map(
         (pkg, idx) => `
-      <article class="itinerary-card" data-aos="fade-up" data-aos-delay="${idx * 80}">
+      <article class="itinerary-card" data-aos="flip-up" data-aos-delay="${idx * 120}">
         <div class="itinerary-card__media">
           <img
             src="${escapeHTML(pkg.image)}"
@@ -1245,8 +1249,8 @@
       <div class="season-picks-grid">
         ${season.picks
           .map(
-            (pick) => `
-          <article class="season-pick-card">
+            (pick, idx) => `
+          <article class="season-pick-card" data-aos="zoom-in-up" data-aos-delay="${idx * 90}">
             <div class="season-pick-card__top">
               <h3 class="season-pick-card__title">${escapeHTML(pick.name)}</h3>
               <span class="season-crowd-pill">${escapeHTML(pick.crowd)}</span>
@@ -1263,6 +1267,10 @@
           )
           .join('')}
       </div>`;
+
+    if (typeof Meridian.refreshAnimations === 'function') {
+      Meridian.refreshAnimations();
+    }
   }
 
   function init() {
@@ -1478,7 +1486,7 @@
           : `Est. ${formatCurrency(estimate.grandTotal)} total (${nights}n · incl. tax)`;
 
         return `
-        <article class="hotel-card ${hotels.length === 1 ? 'hotel-card--spotlight' : ''}" data-aos="fade-up" data-aos-delay="${(idx % 3) * 70}">
+        <article class="hotel-card ${hotels.length === 1 ? 'hotel-card--spotlight' : ''}" data-aos="${idx % 3 === 0 ? 'fade-right' : idx % 3 === 1 ? 'fade-up' : 'fade-left'}" data-aos-delay="${(idx % 3) * 100}">
           <div class="hotel-card__media">
             <img
               src="${escapeHTML(hotel.image)}"
@@ -1741,6 +1749,10 @@
         <span>Estimated Grand Total</span>
         <span>${formatCurrency(est.grandTotal)}</span>
       </div>`;
+
+    if (typeof Meridian.refreshAnimations === 'function') {
+      Meridian.refreshAnimations();
+    }
   }
 
   function init() {
@@ -1984,7 +1996,7 @@
       .map((offer, idx) => {
         const isApplied = activeCode && activeCode === offer.code.toUpperCase();
         return `
-      <article class="offer-card offer-card--${escapeHTML(offer.tone)} ${isApplied ? 'is-applied' : ''}" data-aos="fade-up" data-aos-delay="${(idx % 2) * 80}">
+      <article class="offer-card offer-card--${escapeHTML(offer.tone)} ${isApplied ? 'is-applied' : ''}" data-aos="${idx % 2 === 0 ? 'fade-right' : 'fade-left'}" data-aos-delay="${(idx % 2) * 100}">
         <div>
           <div class="offer-card__header">
             <span class="offer-card__badge">${escapeHTML(offer.badge)}</span>
@@ -2259,7 +2271,7 @@
       .map((item, idx) => {
         const isOpen = idx === 0;
         return `
-        <div class="faq-item ${isOpen ? 'is-open' : ''}" data-faq-item>
+        <div class="faq-item ${isOpen ? 'is-open' : ''}" data-faq-item data-aos="fade-up" data-aos-delay="${idx * 65}">
           <button
             type="button"
             class="faq-trigger"
@@ -2683,13 +2695,19 @@
     };
   }
 
+  let aosInitialized = false;
+
   function initAOS() {
+    aosInitialized = true;
+
     if (typeof global.AOS !== 'undefined') {
       global.AOS.init({
-        duration: 680,
+        duration: 850,
         easing: 'ease-out-cubic',
-        once: true,
-        offset: 55
+        once: false,
+        mirror: true,
+        offset: 40,
+        anchorPlacement: 'top-bottom'
       });
       return;
     }
@@ -2705,10 +2723,7 @@
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('aos-animate');
-            observer.unobserve(entry.target);
-          }
+          entry.target.classList.toggle('aos-animate', entry.isIntersecting);
         });
       },
       { threshold: 0.08 }
@@ -2718,14 +2733,21 @@
   }
 
   function refreshAnimations() {
+    // Do not pre-animate cards during initial page load before AOS initializes
+    if (!aosInitialized) return;
+
     if (typeof global.AOS !== 'undefined') {
       global.AOS.refreshHard();
     }
-    // Ensure dynamically re-rendered cards never remain stuck hidden waiting for scroll
+
+    // Reveal dynamically re-rendered cards visible in or above the current viewport
     document
-      .querySelectorAll('#destinations-grid [data-aos], #hotels-grid [data-aos]')
+      .querySelectorAll('#destinations-grid [data-aos], #hotels-grid [data-aos], #offers-grid [data-aos], #season-panel [data-aos]')
       .forEach((el) => {
-        el.classList.add('aos-animate');
+        const rect = el.getBoundingClientRect();
+        if (rect.top < global.innerHeight) {
+          el.classList.add('aos-animate');
+        }
       });
   }
 
@@ -2749,6 +2771,49 @@
     });
   }
 
+  function initStatCounters() {
+    const strip = document.querySelector('.stats-strip');
+    if (!strip || !('IntersectionObserver' in global)) return;
+
+    const valueEls = strip.querySelectorAll('.stat-item__value');
+    const targets = [
+      { el: valueEls[0], end: 140, decimals: 0, suffix: '+' },
+      { el: valueEls[1], end: 4.88, decimals: 2, suffix: ' / 5' }
+    ].filter((t) => t.el);
+
+    let hasAnimated = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || hasAnimated) return;
+          hasAnimated = true;
+          const start = performance.now();
+          const duration = 1100;
+
+          function step(now) {
+            const progress = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            targets.forEach((item) => {
+              const current = item.end * eased;
+              item.el.textContent =
+                (item.decimals > 0 ? current.toFixed(item.decimals) : Math.round(current)) +
+                item.suffix;
+            });
+            if (progress < 1) {
+              global.requestAnimationFrame(step);
+            }
+          }
+
+          global.requestAnimationFrame(step);
+          observer.disconnect();
+        });
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(strip);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initState();
 
@@ -2765,6 +2830,7 @@
     Meridian.wishlist.init();
     Meridian.newsletter.init();
     initGalleryLinks();
+    initStatCounters();
 
     initAOS();
   });
